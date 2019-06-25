@@ -13,12 +13,12 @@ def is_positional(msg):
 
 def find_vessel(mmsi, client, vessels_index):
     # find the latest type5
-    print('Looking for the vessel', mmsi)
+    # print('Looking for the vessel', mmsi)
     s = Search(using=client, index=vessels_index)\
         .query("match", mmsi=mmsi)\
         .sort('timestamp')
     response = s.execute()
-    print(response[0].to_dict())
+    #print(response[0].to_dict())
     last_type5_msg = response[0].to_dict()
     return last_type5_msg
 
@@ -32,7 +32,7 @@ def wrap_geoJSON(msg):
     return geojson
 
 def add_to_ES(msg, client, index):
-    print(msg)
+    #print(msg)
     return client.index(index=index, body=msg)
     
 def make_ES_doc(msg, client, vessels_index, positions_index):
@@ -46,7 +46,7 @@ def make_ES_doc(msg, client, vessels_index, positions_index):
         msg['location'] = {'coordinates': [msg['lon'], msg['lat']],  'type': 'point'}
     else:
         index = vessels_index
-        print('Adding vessle', msg['mmsi'])
+        #print('Adding vessle', msg['mmsi'])
     add_to_ES(msg, client, index)
 
 class ReceiveHandler(socket_tentacles.ReceiveHandler):
