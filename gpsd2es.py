@@ -32,8 +32,10 @@ def wrap_geoJSON(msg):
     return geojson
 
 def add_to_ES(msg, client, index):
-    print(msg)
-    return client.index(index=index, body=msg)
+    try:
+        return client.index(index=index, body=msg)
+    except Exception as e:
+        print(msg, e)
     
 def make_ES_doc(msg, client, vessels_index, positions_index):
     if is_positional(msg):
