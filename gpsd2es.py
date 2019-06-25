@@ -18,31 +18,32 @@ def find_vessel(mmsi, client, vessels_index):
         .query("match", mmsi=mmsi)\
         .sort('timestamp')
     response = s.execute()
+    print(response[0].to_dict())
     last_type5_msg = response[0].to_dict()
     return last_type5_msg
 
+#NOT IN USE!
 def wrap_geoJSON(msg):
     geojson = {}
-    geojson['properties'] = msg
-    geojson['type'] = 'Point'
-    geojson['coordinates'] = [msg['lon'], msg['lat']]
+    geojson['location'] = {'coordinates': [msg['lon'], msg['lat']],  'type': 'point'}
+    # geojson['properties'] = msg
+    # geojson['type'] = 'point'
+    # geojson['coordinates'] = [msg['lon'], msg['lat']]
     return geojson
 
 def add_to_ES(msg, client, index):
+    print(msg)
     return client.index(index=index, body=msg)
     
 def make_ES_doc(msg, client, vessels_index, positions_index):
     if is_positional(msg):
         try:
-            """FIXME! location seems to be the keyword ES looks for, but GeoJSON only cares about "coordinates".
-            so, these two are redundant here to keep the doc compatible with both GeoJSON & ES"""
-            msg['location'] = {'lat': msg['lat'], 'lon': msg['lon']}
             last_type5_msg = find_vessel(msg['mmsi'], client, vessels_index)
         except:
             last_type5_msg = {}
         msg['last_type5'] = last_type5_msg
         index = positions_index
-        msg = wrap_geoJSON(msg)
+        msg['location'] = {'coordinates': [msg['lon'], msg['lat']],  'type': 'point'}
     else:
         index = vessels_index
         print('Adding vessle', msg['mmsi'])
