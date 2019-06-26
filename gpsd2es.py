@@ -25,7 +25,7 @@ def find_vessel(mmsi, client, vessels_index):
 
 def add_to_ES(msg, client, index):
     try:
-        return client.index(index=index, body=msg)
+        return client.index(index=index, body=msg, id=msg['mmsi'])
     except Exception as e:
         print(msg, e)
     
@@ -54,15 +54,19 @@ class ReceiveHandler(socket_tentacles.ReceiveHandler):
         #FIXME! add a check for indices vs time, if index does not exist, add a new one
         #client.indices.create(index=index)
         for line in self.file:
+            print(type(line))
             msg = json.loads(line)
             msg_ts = dateutil.parser.parse(msg['timestamp'])
             print(msg_ts.year, zeropad(msg_ts.month))
-            vessels_index = 'geocloud-vessels-'+str(msg_ts.year)
-            positions_index = 'geocloud-positions-'+str(msg_ts.year)+'.'+zeropad(msg_ts.month)
+            vessels_index = 'geocloud-vs-'+str(msg_ts.year)
+            if msg['class']=='AIS':
+                positions_index = 'geocloud-ais-'+str(msg_ts.year)+'.'+zeropad(msg_ts.month)
+            elif msg['class']=='TS':
+                positions_index = 'geocloud-ts-'+str(msg_ts.year)+'.'+zeropad(msg_ts.month)
 
             if config['vessels_index'] != vessels_index:
                 if not client.indices.exists(index=vessels_index):
-                    client.indices.create(index=vessels_index)
+                    client.indices.create(index=vessels_index, body=config['vessels_mapping'])
             else:
                 config['vessels_index'] = vessels_index
                 
