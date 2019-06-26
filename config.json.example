@@ -1,6 +1,29 @@
 {
     "es_host" : "192.168.0.1:9200",
     "connections": [
-        {"handler": "source", "type": "listen", "address": "tcp:1024"}
-    ]
+        {"handler": "source", "type": "listen", "address": "tcp:1050"}
+    ],
+    "vessels_index": "",
+    "vessels_mapping": {
+	"mappings" : {
+	    "properties" : {
+		"mmsi": {
+		    "type": "text"
+		}
+	    }
+	}
+    },    
+    "positions_index": "",
+    "positions_mapping": {
+	"mappings" : {
+	    "properties" : {
+		"location": {
+		    "type": "geo_shape"
+		},
+		"mmsi": {
+		    "type": "text"
+		}
+	    }
+	}
+    }
 }

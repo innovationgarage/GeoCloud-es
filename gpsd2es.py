@@ -4,6 +4,8 @@ from elasticsearch_dsl import Search
 from elasticsearch import helpers
 import socket_tentacles
 import json
+from datetime import datetime
+import dateutil.parser
 
 def is_positional(msg):
     if ('lon' in msg.keys()) and ('lat' in msg.keys()):
@@ -40,15 +42,37 @@ def make_ES_doc(msg, client, vessels_index, positions_index):
         index = vessels_index
     add_to_ES(msg, client, index)
 
+def zeropad(n):
+    if n<10:
+        return "0"+str(n)
+    else:
+        return str(n)
+    
 class ReceiveHandler(socket_tentacles.ReceiveHandler):
     def handle(self):
         client = Elasticsearch(["http://{}".format(es_host)])        
         #FIXME! add a check for indices vs time, if index does not exist, add a new one
         #client.indices.create(index=index)
-        vessels_index = 'geocloud-vessels-2019'
-        positions_index = 'geocloud-positions-2019.06'
         for line in self.file:
             msg = json.loads(line)
+            msg_ts = dateutil.parser.parse(msg['timestamp'])
+            print(msg_ts.year, zeropad(msg_ts.month))
+            vessels_index = 'geocloud-vessels-'+str(msg_ts.year)
+            positions_index = 'geocloud-positions-'+str(msg_ts.year)+'.'+zeropad(msg_ts.month)
+
+            if config['vessels_index'] != vessels_index:
+                if not client.indices.exists(index=vessels_index):
+                    client.indices.create(index=vessels_index)
+            else:
+                config['vessels_index'] = vessels_index
+                
+            if config['positions_index'] != positions_index:
+                if not client.indices.exists(index=positions_index):
+                    client.indices.create(index=positions_index, body=config['positions_mapping'])
+            else:
+                config['positions_index'] = positions_index
+
+            print(vessels_index, positions_index)
             make_ES_doc(msg, client, vessels_index, positions_index)
             
 if __name__ == "__main__":
