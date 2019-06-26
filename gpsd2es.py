@@ -76,7 +76,6 @@ class ReceiveHandler(socket_tentacles.ReceiveHandler):
             else:
                 config['positions_index'] = positions_index
 
-            print(vessels_index, positions_index)
             make_ES_doc(msg, client, vessels_index, positions_index)
             
 if __name__ == "__main__":
