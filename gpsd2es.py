@@ -56,7 +56,6 @@ class ReceiveHandler(socket_tentacles.ReceiveHandler):
         for line in self.file:
             msg = json.loads(line)
             msg_ts = dateutil.parser.parse(msg['timestamp'])
-            print(msg_ts.year, zeropad(msg_ts.month))
             vessels_index = 'geocloud-vessels-'+str(msg_ts.year)
             positions_index = 'geocloud-positions-'+str(msg_ts.year)+'.'+zeropad(msg_ts.month)
 
@@ -72,7 +71,6 @@ class ReceiveHandler(socket_tentacles.ReceiveHandler):
             else:
                 config['positions_index'] = positions_index
 
-            print(vessels_index, positions_index)
             make_ES_doc(msg, client, vessels_index, positions_index)
             
 if __name__ == "__main__":
