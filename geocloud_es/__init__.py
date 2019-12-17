@@ -77,10 +77,13 @@ class ReceiveHandler(socket_tentacles.ReceiveHandler):
                 config['positions_index'] = positions_index
 
             make_ES_doc(msg, client, vessels_index, positions_index)
-            
-if __name__ == "__main__":
+
+def main(*arg, **kw):
     with open(sys.argv[1]) as f:
         config = json.load(f)
         
     es_host = config['es_host']
     socket_tentacles.run(config, {"source": ReceiveHandler})
+            
+if __name__ == "__main__":
+    main()
