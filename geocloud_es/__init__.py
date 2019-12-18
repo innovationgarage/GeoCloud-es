@@ -7,6 +7,9 @@ import json
 from datetime import datetime
 import dateutil.parser
 
+es_host = None
+config = None
+
 def is_positional(msg):
     if ('lon' in msg.keys()) and ('lat' in msg.keys()):
         return True
@@ -50,7 +53,7 @@ def zeropad(n):
     
 class ReceiveHandler(socket_tentacles.ReceiveHandler):
     def handle(self):
-        client = Elasticsearch(["http://{}".format(es_host)])        
+        client = Elasticsearch(["http://{}".format(es_host)])
         #FIXME! add a check for indices vs time, if index does not exist, add a new one
         #client.indices.create(index=index)
         for line in self.file:
@@ -79,6 +82,9 @@ class ReceiveHandler(socket_tentacles.ReceiveHandler):
             make_ES_doc(msg, client, vessels_index, positions_index)
 
 def main(*arg, **kw):
+    global config
+    global es_host
+    
     with open(sys.argv[1]) as f:
         config = json.load(f)
         
