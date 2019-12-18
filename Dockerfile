@@ -8,8 +8,8 @@ RUN apt install -y python3 python3-pip
 RUN pip3 install elasticsearch
 RUN pip3 install elasticsearch_dsl
 RUN pip3 install socket-tentacles
+RUN pip3 install geocloud-es
 
 ADD server.sh /server.sh
-ADD gpsd2es.py /gpsd2es.py
 
 CMD ["/bin/bash", "/server.sh"]
