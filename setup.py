@@ -3,7 +3,7 @@
 import setuptools
 
 setuptools.setup(name='geocloud-es',
-      version='0.9',
+      version='0.10',
       description='ElasticSearch ingestor for GPSD JSON',
       long_description="""ElasticSearch ingestor for GPSD JSON""",
       long_description_content_type="text/markdown",
