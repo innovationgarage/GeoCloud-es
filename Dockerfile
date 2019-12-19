@@ -8,7 +8,7 @@ RUN apt install -y python3 python3-pip
 RUN pip3 install elasticsearch
 RUN pip3 install elasticsearch_dsl
 RUN pip3 install socket-tentacles
-RUN pip3 install geocloud-es
+RUN pip3 install geocloud-es>=0.9
 
 ADD server.sh /server.sh
 
