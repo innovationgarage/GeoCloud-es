@@ -40,7 +40,7 @@ def make_ES_doc(msg, client, vessels_index, positions_index):
             last_type5_msg = {}
         msg['last_type5'] = last_type5_msg
         index = positions_index
-        msg['location'] = {'coordinates': [msg['lon'], msg['lat']],  'type': 'point'}
+        msg['location'] = {'lon': [msg['lon'], 'lat':msg['lat']]}
     else:
         index = vessels_index
     add_to_ES(msg, client, index)
